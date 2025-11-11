@@ -9,16 +9,17 @@ const upload = require("./Config/MulterConfig");
 
 const app = express();
 
-// Set View Engine
+// ✅ Set View Engine
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
-// Middleware
+// ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-// 🔒 Login Middleware
+// ✅ Login Middleware (protected routes)
 function findlog(req, res, next) {
   if (!req.cookies || !req.cookies.token) {
     return res.redirect("/login");
@@ -32,19 +33,20 @@ function findlog(req, res, next) {
   }
 }
 
-// 🏠 Home
+// 🏠 Home Page
 app.get("/", (req, res) => {
   res.render("index");
 });
 
 // 🔰 Register Page
 app.get("/register", (req, res) => {
-  res.render("profile");
+  res.render("register");
 });
 
-// 📝 Register
+// 📝 Register Action
 app.post("/register", (req, res) => {
   const { password, email, name, username, age } = req.body;
+
   if (!password || !email || !name || !username || !age) {
     return res.send("All fields are required!");
   }
@@ -58,13 +60,15 @@ app.post("/register", (req, res) => {
         password: hash,
         email,
         posts: [],
-        profile: "default.png", // ✅ default profile
+        profile: "default.png",
         followers: [],
         following: [],
       });
+
       const token = jwt.sign({ email }, "secret");
       res.cookie("token", token);
-      res.redirect("/profile");
+
+      return res.redirect("/profile");
     });
   });
 });
@@ -129,12 +133,11 @@ app.post("/delete/:id", findlog, async (req, res) => {
   res.redirect("/profile");
 });
 
-// ❤️ Like/Unlike Post
+// ❤️ Like / Unlike
 app.get("/like/:id", findlog, async (req, res) => {
   let post = await postmodel.findById(req.params.id);
   const user = await usermodel.findOne({ email: req.user.email });
 
-  // ObjectId comparison fix
   const index = post.likes.findIndex(
     (id) => id.toString() === user._id.toString()
   );
@@ -149,19 +152,19 @@ app.get("/like/:id", findlog, async (req, res) => {
   res.redirect("/profile");
 });
 
-
-// ✏️ Edit Post
+// ✏️ Edit Post Page
 app.get("/edit/:id", findlog, async (req, res) => {
   let post = await postmodel.findById(req.params.id);
   res.render("edit", { post });
 });
 
-app.post("/edit/:for", findlog, async (req, res) => {
-  await postmodel.findByIdAndUpdate(req.params.for, { content: req.body.content });
+// ✏️ Update Post
+app.post("/edit/:id", findlog, async (req, res) => {
+  await postmodel.findByIdAndUpdate(req.params.id, { content: req.body.content });
   res.redirect("/profile");
 });
 
-// 📸 Profile Picture Upload
+// 📸 Upload Profile Picture
 app.get("/profilepic/upload", findlog, (req, res) => {
   res.render("profilepicupload");
 });
@@ -169,7 +172,7 @@ app.get("/profilepic/upload", findlog, (req, res) => {
 app.post("/upload", findlog, upload.single("image"), async (req, res) => {
   try {
     let user = await usermodel.findOne({ email: req.user.email });
-    if (req.file) user.profile = req.file.filename; // ✅ fixed validation error
+    if (req.file) user.profile = req.file.filename;
     await user.save();
     res.redirect("/profile");
   } catch (err) {
@@ -194,10 +197,6 @@ app.post("/profile/update", findlog, async (req, res) => {
 });
 
 // 🌎 Explore Page
-// app.get("/explore", findlog, async (req, res) => {
-//   const posts = await postmodel.find().populate("user").sort({ createdAt: -1 });
-//   res.render("explore", { posts });
-// });
 app.get("/explore", async (req, res) => {
   try {
     const posts = await postmodel.find().populate("user");
@@ -208,8 +207,7 @@ app.get("/explore", async (req, res) => {
   }
 });
 
-
-// 🔍 Search Route
+// 🔍 Search
 app.get("/search", findlog, async (req, res) => {
   const query = req.query.q;
   const users = await usermodel.find({
@@ -221,63 +219,17 @@ app.get("/search", findlog, async (req, res) => {
   res.render("search", { users, posts, query });
 });
 
-// ⚙️ Settings + Delete Account
+// ⚙️ Settings Page (only 1 route now)
 app.get("/settings", findlog, async (req, res) => {
   const user = await usermodel.findOne({ email: req.user.email });
   res.render("settings", { user });
 });
 
+// ❌ Delete Account
 app.post("/deleteaccount", findlog, async (req, res) => {
   await usermodel.findOneAndDelete({ email: req.user.email });
   res.clearCookie("token");
   res.redirect("/");
-});
-
-// 💬 Comment System
-app.post("/comment/:postId", findlog, async (req, res) => {
-  const post = await postmodel.findById(req.params.postId);
-  post.comments.push({
-    user: req.user.email,
-    text: req.body.comment,
-    date: new Date(),
-  });
-  await post.save();
-  res.redirect("/profile");
-});
-
-// 👥 Follow / Unfollow
-app.get("/follow/:username", findlog, async (req, res) => {
-  const userToFollow = await usermodel.findOne({ username: req.params.username });
-  const currentUser = await usermodel.findOne({ email: req.user.email });
-
-  if (!currentUser.following.includes(userToFollow._id)) {
-    currentUser.following.push(userToFollow._id);
-    userToFollow.followers.push(currentUser._id);
-  }
-  await currentUser.save();
-  await userToFollow.save();
-  res.redirect("/profile");
-});
-
-app.get("/unfollow/:username", findlog, async (req, res) => {
-  const userToUnfollow = await usermodel.findOne({ username: req.params.username });
-  const currentUser = await usermodel.findOne({ email: req.user.email });
-
-  currentUser.following = currentUser.following.filter(
-    (id) => id.toString() !== userToUnfollow._id.toString()
-  );
-  userToUnfollow.followers = userToUnfollow.followers.filter(
-    (id) => id.toString() !== currentUser._id.toString()
-  );
-
-  await currentUser.save();
-  await userToUnfollow.save();
-  res.redirect("/profile");
-});
-
-// ⚙️ Temporary Settings Page (To Fix "Failed to lookup view")
-app.get("/settings", findlog, (req, res) => {
-  res.render("settings", { user: req.user });
 });
 
 // 🚀 Start Server

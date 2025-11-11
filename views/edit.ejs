@@ -1,14 +1,13 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
-<head>
-  <title>Edit Post</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white flex items-center justify-center h-screen">
-  <form action="/edit/<%= post._id %>" method="POST" class="bg-gray-800 p-6 rounded-lg w-96">
+   <head> 
+    <title>Edit Post</title> 
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+   </head> 
+   <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white flex items-center justify-center h-screen"> <form action="/edit/<%= post._id %>" method="POST" class="bg-gray-800 p-6 rounded-lg w-96"> 
     <h2 class="text-xl mb-4">Edit Your Post</h2>
-    <textarea name="content" class="w-full p-2 rounded bg-gray-700 mb-3"><%= post.content %></textarea>
-    <button class="bg-green-500 px-4 py-2 rounded hover:bg-green-600">Save</button>
-  </form>
-</body>
-</html>
+     <textarea name="content" class="w-full p-2 rounded bg-gray-700 mb-3"><%= post.content %></textarea> 
+     <button class="bg-green-500 px-4 py-2 rounded hover:bg-green-600">Save</button> 
+    </form>
+   </body>
+    </html>
