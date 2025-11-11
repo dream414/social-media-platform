@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
 
 // 🔰 Register Page
 app.get("/register", (req, res) => {
-  res.render("register");
+  res.render("profile");
 });
 
 // 📝 Register
