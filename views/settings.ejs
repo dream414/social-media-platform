@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Settings</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+  <div class="bg-gray-800 p-6 rounded-xl w-96">
+    <h2 class="text-2xl font-bold mb-4 text-center">Settings</h2>
+    <p class="text-gray-400 mb-4 text-center">Logged in as <%= user.email %></p>
+
+    <a href="/profile/edit" class="block bg-blue-500 hover:bg-blue-600 py-2 mb-3 rounded text-center">Edit Profile</a>
+    <a href="/explore" class="block bg-yellow-500 hover:bg-yellow-600 py-2 mb-3 rounded text-center">Explore</a>
+
+    <form action="/deleteaccount" method="POST" class="mt-4">
+      <button class="bg-red-500 hover:bg-red-600 w-full py-2 rounded">Delete Account</button>
+    </form>
+  </div>
+</body>
+</html>

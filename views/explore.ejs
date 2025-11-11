@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Explore</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-gray-500 via-purple-600 to-purple-500 text-white p-6">
+  <h1 class="text-3xl mb-6 font-bold">Explore Posts</h1>
+
+  <% if (posts && posts.length > 0) { %>
+    <% posts.forEach(post => { %>
+      <div class="bg-gray-800 p-4 mb-4 rounded-lg shadow">
+        <h2 class="font-semibold text-lg">
+          @<%= post.user ? post.user.username : "Unknown User" %>
+        </h2>
+        <p class="mt-2 text-gray-200"><%= post.content %></p>
+        <p class="mt-2 text-yellow-400">❤️ <%= post.likes ? post.likes.length : 0 %> Likes</p>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p class="text-gray-200">No posts found.</p>
+  <% } %>
+</body>
+</html>

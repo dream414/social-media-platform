@@ -1,0 +1,25 @@
+{
+  "name": "daproject",
+  "version": "1.0.0",
+  "description": "data",
+  "main": "index.js",
+  "scripts": {
+    "test": "mongodb"
+  },
+  "keywords": [
+    "data"
+  ],
+  "author": "hani",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "multer": "^2.0.2"
+  }
+}

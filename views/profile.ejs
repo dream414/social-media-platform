@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= user.name %> | Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white p-6">
+
+  <!-- 🔹 Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Welcome, <%= user.name %> 👋</h1>
+    <div class="space-x-3">
+      <a href="/explore" class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">Explore</a>
+      <a href="/settings" class="bg-yellow-500 px-4 py-2 rounded hover:bg-yellow-600">Settings</a>
+      <a href="/logout" class="bg-red-500 px-4 py-2 rounded hover:bg-red-600">Logout</a>
+   
+    </div>
+    <form action="/search" method="GET" class="flex gap-2 mb-4">
+  <input type="text" name="q" placeholder="Search users or posts..."
+    class="p-2 rounded text-black w-64">
+  <button type="submit" class="bg-blue-600 px-4 py-2 rounded">Search</button>
+</form>
+
+  </div>
+
+  <!-- 🔹 Profile Info -->
+  <div class="flex items-center space-x-6 mb-6  bg-gradient-to-br from-gray-500 via-purple-500 to-purple-500 text-white p-5 rounded-xl">
+    <img src="/uploads/<%= user.profile ? user.profile : 'default.png' %>"
+         class="w-24 h-24 rounded-full border-4 border-yellow-400 object-cover">
+
+    <div>
+      <h2 class="text-2xl font-semibold">@<%= user.username %></h2>
+      <p class="text-gray-300"><%= user.email %></p>
+      <p class="text-sm text-gray-400">
+        <%= user.followers.length %> Followers | <%= user.following.length %> Following
+      </p>
+
+      <div class="mt-2 space-x-3">
+        <a href="/profilepic/upload" class="text-blue-400 underline hover:text-blue-300">Change Profile Picture</a>
+        <a href="/profile/edit" class="text-green-400 underline hover:text-green-300">Edit Profile Info</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔹 Create Post -->
+  <form action="/create2" method="POST" class="mb-8   bg-gradient-to-br from-gray-600 via-purple-600 to-purple-500  text-white p-5 rounded-xl">
+    <textarea name="content"
+              placeholder="What's on your mind?"
+              class="w-full p-3 rounded bg-white focus:outline-none focus:ring focus:ring-indigo-500 text-black"
+              required></textarea>
+    <button class="mt-3 bg-green-500 px-4 py-2 rounded hover:bg-green-600">Post</button>
+  </form>
+
+  <!-- 🔹 User Posts -->
+  <h2 class="text-2xl mb-4 font-semibold border-b border-gray-700 pb-2">Your Posts</h2>
+
+  <% if (user.posts.length === 0) { %>
+    <p class="text-gray-400">You haven't posted anything yet.</p>
+  <% } else { %>
+    <% user.posts.forEach(post => { %>
+      <div class=" bg-gradient-to-br from-gray-600 via-purple-600 to-black text-white p-5 rounded-xl mb-4 shadow-lg">
+        <p class="text-lg mb-3"><%= post.content %></p>
+
+        <div class="flex items-center justify-between text-sm">
+          <div>
+            <a href="/like/<%= post._id %>" class="text-yellow-400 hover:text-yellow-300 mr-3">
+              ❤️ <%= post.likes.length %>
+            </a>
+            <a href="/edit/<%= post._id %>" class="text-blue-400 hover:text-blue-300 mr-3">Edit</a>
+          </div>
+
+          <form action="/delete/<%= post._id %>" method="POST" class="inline">
+            <button class="text-red-400 hover:text-red-300">Delete</button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+
+</body>
+</html>
